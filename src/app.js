@@ -1,9 +1,48 @@
 const express = require("express");
+const { connectDb } = require("./config/database");
 const app = express();
-app.use("/test", (req, res) => {
-  res.send("Server is running");
+const User = require("./models/user");
+
+app.use(express.json());
+app.get("/feed", async (req, res) => {
+  const user = await User.find();
+  try {
+    if (user) {
+      res.send(user);
+    } else {
+      res.send("User not found ");
+    }
+  } catch (err) {
+    res.send("something went wrong");
+  }
 });
-app.use("/hello", (req, res) => {
-  res.send("Server is running hello");
+app.delete("/del", async (req, res) => {
+  const userId = req.body.userId;
+  const user = await User.findByIdAndDelete(userId);
+  res.send("user deleted successsfully");
 });
-app.listen(7777);
+app.patch("/update", async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+  await User.findByIdAndUpdate(userId, data);
+  res.send("updated successfully");
+});
+
+app.post("/signup", async (req, res) => {
+  const details = new User(req.body);
+  try {
+    await details.save();
+    res.send("details stored successfully");
+  } catch (err) {
+    res.send("Error in saving data");
+  }
+});
+connectDb()
+  .then(() => {
+    console.log("Connection established");
+    app.listen(7777);
+    console.log("Server islistening");
+  })
+  .catch((err) => {
+    console.log("connection cannot be established");
+  });
