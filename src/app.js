@@ -4,7 +4,10 @@ const app = express();
 const User = require("./models/user");
 const { validateSignup } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cookie = require("cookie-parser");
 app.use(express.json());
+app.use(cookie());
 app.get("/feed", async (req, res) => {
   const user = await User.find();
   try {
@@ -57,8 +60,27 @@ app.get("/login", async (req, res) => {
     if (!isPasswordValid) {
       res.send("password is not valid");
     } else {
+      const token = await jwt.sign({ _id: user._id }, "RidhimaPachipulusu");
+      res.cookie("token", token);
       res.send("Login successful");
     }
+  } catch (err) {
+    res.send("ERROR:" + err.message);
+  }
+});
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+    if (!token) {
+      res.send("token is not valid");
+    }
+    const decode = await jwt.verify(token, "RidhimaPachipulusu");
+    const user = await User.findById(decode);
+    if (!user) {
+      res.send("user not found");
+    }
+    res.send(user);
   } catch (err) {
     res.send("ERROR:" + err.message);
   }
