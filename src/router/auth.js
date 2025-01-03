@@ -22,7 +22,7 @@ authRouter.post("/signup", async (req, res) => {
     res.send("ERROR:" + err.message);
   }
 });
-authRouter.get("/login",async (req, res) => {
+authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
@@ -40,5 +40,9 @@ authRouter.get("/login",async (req, res) => {
   } catch (err) {
     res.send("ERROR:" + err.message);
   }
+});
+authRouter.post("/logout", async (req, res) => {
+  res.cookie("token", null, { expires: new Date(Date.now()) });
+  res.send("Logout successful");
 });
 module.exports = authRouter;

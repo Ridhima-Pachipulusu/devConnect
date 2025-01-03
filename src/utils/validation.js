@@ -11,4 +11,13 @@ const validateSignup = (req) => {
     throw new Error("Password is not strong enough");
   }
 };
-module.exports = { validateSignup };
+const isUpdateValid = (req) => {
+  const allowedFields = ["firstName", "lastName", "email", "age", "gender"];
+  const valid = Object.keys(req.body).every((feild) =>
+    allowedFields.includes(feild)
+  );
+  if (!valid) {
+    throw new Error("Invalid update request");
+  }
+};
+module.exports = { validateSignup, isUpdateValid };
