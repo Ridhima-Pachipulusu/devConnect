@@ -43,4 +43,35 @@ connectionRouter.post(
     }
   }
 );
+connectionRouter.post(
+  "/request/view/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const fromUserId = req.params.requestId;
+      const toUserId = req.user._id;
+      const status = req.params.status;
+      const allowedStatus = ["accept", "reject"];
+      if (!allowedStatus.includes(status)) {
+        throw new Error("Invalid status type");
+      }
+      const statusCheck = await Request.findOne({
+        fromUserId,
+        toUserId,
+      });
+      if (!statusCheck.status == "interested") {
+        throw new Error("Status request between them is not INTERESTED");
+      }
+      const fromUser = await User.findById(fromUserId);
+      if (!fromUser) {
+        throw new Error("You got request from unknown person to the DB");
+      }
+      statusCheck.status = status;
+      await statusCheck.save();
+      res.json(`You have just ${status} the ${fromUser.firstName}'s request`);
+    } catch (err) {
+      res.send("ERROR" + err.message);
+    }
+  }
+);
 module.exports = connectionRouter;

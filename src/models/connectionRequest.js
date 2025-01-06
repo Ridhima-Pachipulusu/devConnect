@@ -3,6 +3,7 @@ const connectionRequestModel = new mongoose.Schema(
   {
     fromUserId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref:"User",
       require: true,
     },
     toUserId: {
@@ -13,7 +14,7 @@ const connectionRequestModel = new mongoose.Schema(
       type: String,
       required: true,
       enum: {
-        values: ["ignored","interested","accepted","rejected"],
+        values: ["ignored","interested","accept","reject"],
         message: `{VALUE} is not matched with any status`,
       },
     },

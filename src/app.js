@@ -4,12 +4,14 @@ const app = express();
 const cookie = require("cookie-parser");
 const authRouter = require("./router/auth");
 const profileRouter = require("./router/profileRouter");
-const connectionRouter=require("./router/connectionRequests");
+const connectionRouter = require("./router/connectionRequests");
+const userRouter = require("./router/userRouter");
 app.use(express.json());
 app.use(cookie());
 app.use("/", authRouter);
 app.use("/", profileRouter);
-app.use("/",connectionRouter);
+app.use("/", connectionRouter);
+app.use("/", userRouter);
 connectDb()
   .then(() => {
     console.log("Connection established");
