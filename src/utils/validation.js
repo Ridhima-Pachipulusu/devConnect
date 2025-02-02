@@ -12,7 +12,16 @@ const validateSignup = (req) => {
   }
 };
 const isUpdateValid = (req) => {
-  const allowedFields = ["firstName", "lastName", "email", "age", "gender"];
+  const allowedFields = [
+    "firstName",
+    "lastName",
+    "email",
+    "age",
+    "gender",
+    "skills",
+    "about",
+    "photoUrl",
+  ];
   const valid = Object.keys(req.body).every((feild) =>
     allowedFields.includes(feild)
   );

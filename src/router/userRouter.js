@@ -45,10 +45,13 @@ userRouter.get("/user/acceptedConnections", userAuth, async (req, res) => {
 });
 userRouter.get("/user/feed", userAuth, async (req, res) => {
   try {
+    const page = parseInt(req.query.page);
+    let limit = parseInt(req.query.limit);
+    limit = limit > 50 ? 50 : limit;
+    const skip = (page - 1) * limit;
     const connections = await Request.find({
       $or: [{ fromUserId: req.user._id }, { toUserId: req.user._id }],
-    }).select("fromUserId toUserId");
-    console.log(connections);
+    });
     const hideUsers = new Set();
     connections.forEach((req) => {
       hideUsers.add(req.fromUserId.toString()),
@@ -59,7 +62,9 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
         { _id: { $nin: Array.from(hideUsers) } },
         { _id: { $ne: req.user._id } },
       ],
-    }).select("firstName lastName");
+    })
+      .skip(skip)
+      .limit(limit);
     res.send(userFeed);
   } catch (err) {
     res.send("ERROR " + err.message);

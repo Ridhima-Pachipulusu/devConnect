@@ -27,18 +27,18 @@ authRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
     if (!user) {
-      res.send("Email id is not present");
+      throw new Error("Email/Password not valid");
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      res.send("password is not valid");
+      throw new Error("Email/Password not valid");
     } else {
-      const token = await jwt.sign({ _id: user._id }, "RidhimaPachipulusu");
+      const token = jwt.sign({ _id: user._id }, "RidhimaPachipulusu");
       res.cookie("token", token);
-      res.send("Login successful");
+      res.send(user);
     }
   } catch (err) {
-    res.send("ERROR:" + err.message);
+    res.status(401).json({ error: err.message });
   }
 });
 authRouter.post("/logout", async (req, res) => {
