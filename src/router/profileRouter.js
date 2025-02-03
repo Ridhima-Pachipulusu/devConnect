@@ -15,7 +15,14 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     isUpdateValid(req);
     const loggedInUser = req.user;
 
-    Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
+    Object.keys(req.body).forEach((key) => {
+      if (key === "skills" && typeof req.body[key] === "string") {
+        loggedInUser[key] ==
+          req.body[key].split(",").map((skill) => skill.trim());
+      } else {
+        loggedInUser[key] == req.body[key];
+      }
+    });
 
     await loggedInUser.save();
     res.send("Details updated successfully");
