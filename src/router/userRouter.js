@@ -26,12 +26,12 @@ userRouter.get("/user/acceptedConnections", userAuth, async (req, res) => {
         { fromUserId: req.user._id, status: "accept" },
       ],
     })
-      .populate("fromUserId", "firstName")
-      .populate("toUserId", "firstName");
-    const data = connections.map((row) => {
-      if (String(row.fromUserId._id) === String(req.user._id)) {
-        return row.toUserId;
-      } else {
+      .populate("fromUserId", "firstName lastName about photoUrl")
+      .populate("toUserId", "firstName lastName about photoUrl");
+      const data = connections.map((row) => {
+        if (String(row.fromUserId._id) === String(req.user._id)) {
+          return row.toUserId;
+        } else {
         return row.fromUserId;
       }
     });

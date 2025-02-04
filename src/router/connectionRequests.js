@@ -12,6 +12,7 @@ connectionRouter.post(
       const status = req.params.status;
       const toUserId = req.params.toUserId;
       const allowedStatus = ["ignored", "interested"];
+      console.log(fromUserId,toUserId)
       if (!allowedStatus.includes(status)) {
         throw new Error("Invalid status type");
       }
@@ -68,7 +69,7 @@ connectionRouter.post(
       }
       statusCheck.status = status;
       await statusCheck.save();
-      res.json(`You have just ${status} the ${fromUser.firstName}'s request`);
+      res.json(`You have just ${status}ed the ${fromUser.firstName}'s request`);
     } catch (err) {
       res.send("ERROR" + err.message);
     }

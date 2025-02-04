@@ -16,16 +16,13 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     const loggedInUser = req.user;
 
     Object.keys(req.body).forEach((key) => {
-      if (key === "skills" && typeof req.body[key] === "string") {
-        loggedInUser[key] ==
-          req.body[key].split(",").map((skill) => skill.trim());
-      } else {
-        loggedInUser[key] == req.body[key];
+      if (req.body[key] !== undefined) {
+        loggedInUser[key] = req.body[key];
       }
     });
 
     await loggedInUser.save();
-    res.send("Details updated successfully");
+    res.send(loggedInUser);
   } catch (err) {
     res.send("ERROR:" + err.message);
   }
