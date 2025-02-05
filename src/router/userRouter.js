@@ -9,9 +9,11 @@ userRouter.get("/user/connections/received", userAuth, async (req, res) => {
     const requests = await Request.find({
       toUserId: req.user._id,
       status: "interested",
-    }).populate("fromUserId", ["firstName", "lastName"]);
+    }).populate(
+      "fromUserId",
+      "firstName lastName age gender about photoUrl skills"
+    );
     res.json({
-      message: "These people are interested in your profile",
       data: requests,
     });
   } catch (err) {
@@ -26,19 +28,17 @@ userRouter.get("/user/acceptedConnections", userAuth, async (req, res) => {
         { fromUserId: req.user._id, status: "accept" },
       ],
     })
-      .populate("fromUserId", "firstName lastName about photoUrl")
-      .populate("toUserId", "firstName lastName about photoUrl");
-      const data = connections.map((row) => {
-        if (String(row.fromUserId._id) === String(req.user._id)) {
-          return row.toUserId;
-        } else {
+      .populate("fromUserId", "firstName lastName age gender about photoUrl skills")
+      .populate("toUserId", "firstName lastName age gender about photoUrl skills")
+      .lean();
+    const data = connections.map((row) => {
+      if (String(row.fromUserId._id) === String(req.user._id)) {
+        return row.toUserId;
+      } else {
         return row.fromUserId;
       }
     });
-    res.json({
-      message: "These people are your connections",
-      data,
-    });
+    res.json({data});
   } catch (err) {
     res.send("Error " + err.message);
   }
