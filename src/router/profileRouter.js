@@ -7,7 +7,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
     const user = req.user;
     res.send(user);
   } catch (err) {
-    res.send("ERROR:" + err.message);
+    res.status(402).json({ error: err.message });
   }
 });
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
@@ -24,7 +24,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     await loggedInUser.save();
     res.send(loggedInUser);
   } catch (err) {
-    res.send("ERROR:" + err.message);
+    res.status(401).json({ error: err.message });
   }
 });
 module.exports = profileRouter;

@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   },
   age: {
     type: Number,
+    default:null,
   },
   email: {
     type: String,
@@ -22,6 +23,7 @@ const userSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
+    default:null,
   },
   about: {
     type: String,

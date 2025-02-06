@@ -48,10 +48,12 @@ connectionRouter.post(
   userAuth,
   async (req, res) => {
     try {
+      console.log("ApI hit successfulllll")
       const fromUserId = req.params.requestId;
       const toUserId = req.user._id;
       const status = req.params.status;
       const allowedStatus = ["accept", "reject"];
+      console.log(req.params)
       if (!allowedStatus.includes(status)) {
         throw new Error("Invalid status type");
       }

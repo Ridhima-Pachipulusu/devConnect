@@ -8,23 +8,25 @@ const { validateSignup } = require("../utils/validation");
 authRouter.post("/signup", async (req, res) => {
   try {
     validateSignup(req);
-    const { firstName, lastName, email, password,age,gender,photoUrl,skills,about } = req.body;
+    const { firstName, lastName, email, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
     const details = new User({
       firstName,
       lastName,
       email,
       password: passwordHash,
-      age,
-      gender,
-      photoUrl,
-      skills,
-      about
     });
-    await details.save();
-    res.send("details stored successfully");
+    const savedUser = await details.save();
+    const token = jwt.sign({ _id: savedUser._id }, "RidhimaPachipulusu");
+    res.cookie("token", token);
+    res.json({ savedUser });
   } catch (err) {
-    res.send("ERROR:" + err.message);
+     if (err.code === 11000) {
+       return res
+         .status(400)
+         .json({ error: "Email already exists. Please log in." });
+     }
+    res.status(401).json({error:err.message});
   }
 });
 authRouter.post("/login", async (req, res) => {
