@@ -7,7 +7,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
     const user = req.user;
     res.send(user);
   } catch (err) {
-    res.status(402).json({ error: err.message });
+    res.status(401).json({ error: err.message });
   }
 });
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {

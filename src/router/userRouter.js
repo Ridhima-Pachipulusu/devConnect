@@ -28,8 +28,14 @@ userRouter.get("/user/acceptedConnections", userAuth, async (req, res) => {
         { fromUserId: req.user._id, status: "accept" },
       ],
     })
-      .populate("fromUserId", "firstName lastName age gender about photoUrl skills")
-      .populate("toUserId", "firstName lastName age gender about photoUrl skills")
+      .populate(
+        "fromUserId",
+        "firstName lastName age gender about photoUrl skills"
+      )
+      .populate(
+        "toUserId",
+        "firstName lastName age gender about photoUrl skills"
+      )
       .lean();
     const data = connections.map((row) => {
       if (String(row.fromUserId._id) === String(req.user._id)) {
@@ -38,7 +44,7 @@ userRouter.get("/user/acceptedConnections", userAuth, async (req, res) => {
         return row.fromUserId;
       }
     });
-    res.json({data});
+    res.json({ data });
   } catch (err) {
     res.send("Error " + err.message);
   }
@@ -68,6 +74,26 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     res.send(userFeed);
   } catch (err) {
     res.send("ERROR " + err.message);
+  }
+});
+userRouter.post("/user/remove/:toUserId", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const fromUserId = loggedInUser._id;
+    const toUserId = req.params.toUserId;
+    const findConnection = await Request.findOne({
+      $or: [
+        { fromUserId, toUserId },
+        { fromUserId: toUserId, toUserId: fromUserId },
+      ],
+    });
+    if (findConnection.status === "accept") {
+      await Request.deleteOne({ _id: findConnection._id });
+      res.json({ message: "Removed connection successfully" });
+    }
+    throw new Error({ error: "Cannot find a connection between those users" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 module.exports = userRouter;
