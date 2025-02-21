@@ -7,6 +7,8 @@ const profileRouter = require("./router/profileRouter");
 const connectionRouter = require("./router/connectionRequests");
 const userRouter = require("./router/userRouter");
 const cors = require("cors");
+const http=require("http");
+const initialize = require("./utils/Socket");
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -19,10 +21,12 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
 app.use("/", userRouter);
+const server=http.createServer(app)
+initialize(server)
 connectDb()
   .then(() => {
     console.log("Connection established");
-    app.listen(7777);
+    server.listen(7777);
     console.log("Server islistening");
   })
   .catch((err) => {

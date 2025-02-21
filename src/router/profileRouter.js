@@ -5,6 +5,9 @@ const { isUpdateValid, validateSignup } = require("../utils/validation");
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
+     if (!user) {
+       return res.status(404).json({ error: "User not found" });
+     }
     res.send(user);
   } catch (err) {
     res.status(401).json({ error: err.message });
