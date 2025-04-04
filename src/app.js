@@ -9,6 +9,7 @@ const userRouter = require("./router/userRouter");
 const cors = require("cors");
 const http=require("http");
 const initialize = require("./utils/Socket");
+const chat = require("./router/chat");
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -21,6 +22,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRouter);
 app.use("/", userRouter);
+app.use("/", chat);
 const server=http.createServer(app)
 initialize(server)
 connectDb()

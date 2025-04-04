@@ -1,5 +1,6 @@
 const socket = require("socket.io");
 const crypto = require("crypto");
+const { Chat } = require("../models/chat");
 const initialize = (server) => {
   const getRoomId = (userId, toUserId) => {
     return crypto
@@ -13,18 +14,32 @@ const initialize = (server) => {
     },
   });
   io.on("connection", (socket) => {
-    socket.on("joinChat", ({firstName, userId, toUserId}) => {
+    socket.on("joinChat", ({ firstName, userId, toUserId }) => {
       const roomId = getRoomId(userId, toUserId);
       console.log(firstName + "joined" + roomId);
       socket.join(roomId);
     });
-    socket.on("sendMessage", ({firstName,userId, toUserId, newMessage}) => {
-      const roomId = getRoomId(userId, toUserId);
-     console.log(firstName + " " + newMessage);
-      io.to(roomId).emit("messageReceived", { newMessage });
-    });
-    socket.on("disconnect", () => {
-    });
+    socket.on(
+      "sendMessage",
+      async ({ firstName, userId, toUserId, newMessage }) => {
+        const roomId = getRoomId(userId, toUserId);
+        try {
+          let chat = await Chat.findOne({
+            participants: { $all: [userId, toUserId] },
+          });
+          if (!chat) {
+            chat = await new Chat({
+              participants: [userId, toUserId],
+              messages: [],
+            });
+          }
+          chat.messages.push({ senderId: userId, message: newMessage });
+          await chat.save();
+          io.to(roomId).emit("messageReceived", { firstName, newMessage });
+        } catch (err) {}
+      }
+    );
+    socket.on("disconnect", () => {});
   });
 };
 module.exports = initialize;
