@@ -29,7 +29,7 @@ initialize(server);
 connectDb()
   .then(() => {
     console.log("Database Connection established");
-    server.listen(7777);
+    server.listen(process.env.PORT);
     console.log("Server is listening");
   })
   .catch((err) => {
