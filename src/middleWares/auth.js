@@ -6,7 +6,7 @@ const userAuth = async (req, res, next) => {
     if (!token) {
       return res.status(401).send("Please login");
     }
-    const msg = await jwt.verify(token, "RidhimaPachipulusu");
+    const msg = await jwt.verify(token,process.env.AUTH_TOKEN );
     const user = await User.findById(msg);
     if (!user) {
       throw new Error("User not found");

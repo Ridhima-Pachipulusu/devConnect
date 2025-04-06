@@ -7,9 +7,10 @@ const profileRouter = require("./router/profileRouter");
 const connectionRouter = require("./router/connectionRequests");
 const userRouter = require("./router/userRouter");
 const cors = require("cors");
-const http=require("http");
+const http = require("http");
 const initialize = require("./utils/Socket");
 const chat = require("./router/chat");
+require("dotenv").config();
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -23,13 +24,13 @@ app.use("/", profileRouter);
 app.use("/", connectionRouter);
 app.use("/", userRouter);
 app.use("/", chat);
-const server=http.createServer(app)
-initialize(server)
+const server = http.createServer(app);
+initialize(server);
 connectDb()
   .then(() => {
-    console.log("Connection established");
+    console.log("Database Connection established");
     server.listen(7777);
-    console.log("Server islistening");
+    console.log("Server is listening");
   })
   .catch((err) => {
     console.log("connection cannot be established");
